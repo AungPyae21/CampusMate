@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Mate - Kasem Bundit University Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        kbu: {
+                            navy: '#0F2942',
+                            blue: '#1E40AF',
+                            gold: '#D97706',
+                            accent: '#3B82F6',
+                            lightBg: '#F8FAFC',
+                            cardBg: '#FFFFFF',
+                            textDark: '#1E293B',
+                            textMuted: '#64748B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F1F5F9;
+            color: #1E293B;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        .pulse-badge {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white">
+
+    <!-- Top System Bar -->
+    <header class="bg-kbu-navy text-white sticky top-0 z-40 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Branding -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="handleLogoClick()">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-kbu-navy font-bold text-xl shadow-lg">
+                        <i class="fa-solid font-bold text-lg fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-extrabold text-lg tracking-tight text-white">Campus<span class="text-amber-400">Mate</span></span>
+                            <span class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-mono font-semibold border border-amber-500/30">KBU v1.2</span>
+                        </div>
+                        <p class="text-[11px] text-slate-300 hidden sm:block">Kasem Bundit University Announcement Platform</p>
+                    </div>
+                </div>
+
+                <!-- Active Role Indicator & Logout Button -->
+                <div id="header-user-section" class="flex items-center space-x-4 hidden">
+                    <div id="user-badge" class="text-right hidden sm:block">
+                        <div id="user-name" class="text-xs font-semibold text-white">Sai Thet Htut Lin</div>
+                        <div id="user-role" class="text-[10px] text-amber-400 font-medium">Student • ID: 67123407</div>
+                    </div>
+                    <div class="w-9 h-9 rounded-full bg-slate-700 ring-2 ring-amber-400/50 flex items-center justify-center text-amber-300 font-semibold text-xs shadow-inner" id="user-avatar">
+                        SL
+                    </div>
+                    <button onclick="logout()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1.5">
+                        <i class="fa-solid fa-right-from-bracket text-amber-400"></i>
+                        <span class="hidden sm:inline">Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 0: LOGIN PAGE (ENTRY POINT) -->
+        <!-- ========================================================================= -->
+        <div id="view-login" class="max-w-md mx-auto my-8">
+            <div class="bg-white rounded-3xl shadow-xl border border-slate-200/80 overflow-hidden">
+                <!-- Header Banner -->
+                <div class="bg-gradient-to-br from-kbu-navy via-slate-900 to-slate-800 p-8 text-center text-white relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 opacity-10 text-9xl">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div class="w-16 h-16 bg-gradient-to-tr from-amber-500 to-amber-300 rounded-2xl mx-auto flex items-center justify-center text-kbu-navy text-2xl font-bold shadow-lg mb-3">
+                        <i class="fa-solid fa-university"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold tracking-tight">Kasem Bundit University</h2>
+                    <p class="text-xs text-amber-400 font-medium mt-1">Campus Mate Announcement & Inquiry Portal</p>
+                </div>
+
+                <!-- Role Selector Tabs -->
+                <div class="p-6">
+                    <div class="flex bg-slate-100 p-1 rounded-xl mb-6">
+                        <button type="button" id="tab-login-student" onclick="setLoginRole('student')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-amber-500 text-kbu-navy shadow">
+                            <i class="fa-solid fa-user-graduate mr-1.5"></i>Student Login
+                        </button>
+                        <button type="button" id="tab-login-staff" onclick="setLoginRole('staff')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 transition-all">
+                            <i class="fa-solid fa-user-shield mr-1.5"></i>Staff / Admin
+                        </button>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                        <div>
+                            <label id="label-username" class="block text-xs font-bold text-slate-700 mb-1">Student ID Number</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-id-card absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+                                <input type="text" id="login-username" required value="67123407" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+                                <input type="password" id="login-password" required value="••••••••" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs text-slate-500">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" checked class="rounded text-amber-500 focus:ring-amber-400">
+                                <span>Remember account</span>
+                            </label>
+                            <a href="#" onclick="showToast('Password reset instructions sent to KBU mail', 'info')" class="text-amber-600 hover:underline font-semibold">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" id="btn-login-submit" class="w-full bg-amber-500 hover:bg-amber-600 text-kbu-navy font-extrabold py-3 rounded-xl text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 mt-2">
+                            <span>Access Student Dashboard</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <!-- Quick Demo Credentials Selector -->
+                    <div class="mt-6 pt-5 border-t border-slate-100">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center mb-2">Quick One-Click Demo Logins</div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="quickLogin('student')" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl p-2.5 text-left transition-all">
+                                <div class="text-xs font-bold"><i class="fa-solid fa-user-graduate mr-1"></i>Student Demo</div>
+                                <div class="text-[10px] text-amber-700">Sai Thet Htut Lin (67123407)</div>
+                            </button>
+                            <button onclick="quickLogin('staff')" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 rounded-xl p-2.5 text-left transition-all">
+                                <div class="text-xs font-bold"><i class="fa-solid fa-user-shield mr-1"></i>Staff Demo</div>
+                                <div class="text-[10px] text-blue-700">Ajarn Atcha (Registrar)</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 1: STUDENT PORTAL DASHBOARD -->
+        <!-- ========================================================================= -->
+        <div id="view-student" class="hidden space-y-6">
+            
+            <!-- Banner & Quick Stats -->
+            <div class="bg-gradient-to-r from-kbu-navy via-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-xl relative overflow-hidden border border-slate-700/50">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-white text-9xl">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    <div class="inline-flex items-center space-x-2 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] px-3 py-1 rounded-full mb-3 font-semibold">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 pulse-badge"></span>
+                        <span>Kasem Bundit University Official Portal</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Stay Informed, Never Miss KBU Updates</h1>
+                    <p class="mt-2 text-slate-300 text-xs sm:text-sm leading-relaxed">
+                        Centralized announcements for course registration, exam schedules, tuition deadlines, and department news. Have a question? Submit a direct inquiry ticket to staff!
+                    </p>
+                    
+                    <!-- Search & Filter Controls -->
+                    <div class="mt-5 flex flex-col sm:flex-row gap-2">
+                        <div class="relative flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                            <input type="text" id="student-search" oninput="filterAnnouncements()" placeholder="Search by keyword, subject, or department..." class="w-full pl-10 pr-4 py-2.5 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all">
+                        </div>
+                        <button onclick="openInquiryTrackerModal()" class="bg-amber-500 hover:bg-amber-600 text-kbu-navy font-bold px-4 py-2.5 rounded-xl text-xs flex items-center justify-center space-x-2 transition-all shadow-md shrink-0">
+                            <i class="fa-solid fa-list-check"></i>
+                            <span>My Submitted Inquiries</span>
+                            <span id="student-inquiry-badge" class="bg-kbu-navy text-amber-300 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full ml-1">2</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Tabs & Filter bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-3">
+                <!-- Categories pills -->
+                <div class="flex items-center space-x-2 overflow-x-auto custom-scrollbar pb-1 sm:pb-0">
+                    <button onclick="setCategory('ALL')" class="cat-pill bg-kbu-navy text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0">
+                        <i class="fa-solid fa-layer-group mr-1.5"></i>All Feed
+                    </button>
+                    <button onclick="setCategory('ACADEMIC')" class="cat-pill bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0">
+                        <i class="fa-solid fa-book mr-1.5 text-blue-500"></i>Academic
+                    </button>
+                    <button onclick="setCategory('REGISTRATION')" class="cat-pill bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0">
+                        <i class="fa-solid fa-id-card mr-1.5 text-emerald-500"></i>Registration
+                    </button>
+                    <button onclick="setCategory('TUITION')" class="cat-pill bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0">
+                        <i class="fa-solid fa-credit-card mr-1.5 text-purple-500"></i>Tuition & Finance
+                    </button>
+                    <button onclick="setCategory('CAMPUS')" class="cat-pill bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0">
+                        <i class="fa-solid fa-building-columns mr-1.5 text-amber-500"></i>Campus Life
+                    </button>
+                </div>
+
+                <!-- Info Indicator -->
+                <div class="text-xs text-slate-500 font-medium shrink-0 flex items-center space-x-1">
+                    <i class="fa-solid fa-circle-info text-blue-500"></i>
+                    <span>Showing <strong id="announcement-count" class="text-slate-800">4</strong> notices</span>
+                </div>
+            </div>
+
+            <!-- Announcement Cards Feed Grid -->
+            <div id="announcement-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamic cards populated via JS -->
+            </div>
+        </div>
+
+
+        <!-- ========================================================================= -->
+        <!-- VIEW 2: STAFF / ADMIN PORTAL DASHBOARD -->
+        <!-- ========================================================================= -->
+        <div id="view-staff" class="hidden space-y-6">
+            
+            <!-- Admin Top Bar & Analytics Summary -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider">Staff Management Center</span>
+                        <span class="text-xs text-slate-400">|</span>
+                        <span class="text-xs text-slate-500 font-medium">Kasem Bundit Registrar & Academic Admin</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800 mt-1">Announcement & Inquiry Dashboard</h2>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <button onclick="openCreateAnnouncementModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        <span>Create Announcement (UC-02)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Overview Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-medium text-slate-500">Total Published</div>
+                        <div class="text-2xl font-extrabold text-slate-800 mt-0.5" id="stat-total-published">18</div>
+                        <div class="text-[10px] text-emerald-600 font-semibold mt-1"><i class="fa-solid fa-arrow-up mr-1"></i>+3 this week</div>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-bullhorn"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-medium text-slate-500">Pending Inquiries</div>
+                        <div class="text-2xl font-extrabold text-amber-600 mt-0.5" id="stat-pending-inquiries">3</div>
+                        <div class="text-[10px] text-amber-600 font-semibold mt-1"><i class="fa-solid fa-clock mr-1"></i>Requires Staff Action</div>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-circle-question"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-medium text-slate-500">Avg Resolution Time</div>
+                        <div class="text-2xl font-extrabold text-emerald-600 mt-0.5">1.4 Hrs</div>
+                        <div class="text-[10px] text-emerald-600 font-semibold mt-1"><i class="fa-solid fa-check-double mr-1"></i>SLA Met (&lt; 24h)</div>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-medium text-slate-500">LINE Webhook Status</div>
+                        <div class="text-2xl font-extrabold text-slate-800 mt-0.5">Active</div>
+                        <div class="text-[10px] text-emerald-600 font-semibold mt-1"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Auto Cross-Posting On</div>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-lg">
+                        <i class="fa-brands fa-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Action Tabs & Inquiry Resolution Queue (UC-09, UC-10, UC-11) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base flex items-center space-x-2">
+                            <span>Inquiry Ticket Management Queue</span>
+                            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-bold" id="queue-count-badge">2 Open</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Review student questions linked to announcements and provide official staff responses.</p>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <button onclick="filterStaffInquiries('ALL')" class="staff-filter-btn bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold">All Tickets</button>
+                        <button onclick="filterStaffInquiries('OPEN')" class="staff-filter-btn bg-slate-100 text-slate-600 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold">Pending / Open</button>
+                        <button onclick="filterStaffInquiries('RESOLVED')" class="staff-filter-btn bg-slate-100 text-slate-600 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold">Resolved</button>
+                    </div>
+                </div>
+
+                <!-- Inquiry Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200">
+                                <th class="py-3 px-4">TICKET ID</th>
+                                <th class="py-3 px-4">STUDENT</th>
+                                <th class="py-3 px-4">ASSOCIATED ANNOUNCEMENT</th>
+                                <th class="py-3 px-4">QUESTION SNIPPET</th>
+                                <th class="py-3 px-4">STATUS</th>
+                                <th class="py-3 px-4">DATE SUBMITTED</th>
+                                <th class="py-3 px-4 text-right">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staff-inquiry-tbody" class="divide-y divide-slate-100">
+                            <!-- JS populated rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Published Announcements List Management -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base">Manage Published Announcements (UC-14)</h3>
+                        <p class="text-xs text-slate-500">Edit, archive, or check performance metrics for active announcements.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="staff-announcements-list">
+                    <!-- Dynamic staff manage list -->
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ========================================================================= -->
+    <!-- MODALS & DRAWERS (KEY INTERACTIONS) -->
+    <!-- ========================================================================= -->
+
+    <!-- Modal 1: Announcement Detail View & Submit Inquiry Option -->
+    <div id="modal-announcement-detail" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-slate-100 flex items-start justify-between bg-slate-50 rounded-t-2xl">
+                <div>
+                    <span id="modal-detail-category" class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">Academic</span>
+                    <h3 id="modal-detail-title" class="text-xl font-bold text-slate-800 mt-2">Final Examination Timetable & Hall Regulations - Semester 1/2026</h3>
+                    <div class="flex items-center space-x-3 text-xs text-slate-500 mt-2">
+                        <span id="modal-detail-author"><i class="fa-solid fa-user-tie mr-1"></i>Office of the Registrar</span>
+                        <span>•</span>
+                        <span id="modal-detail-date"><i class="fa-solid fa-calendar mr-1"></i>Aug 24, 2026</span>
+                    </div>
+                </div>
+                <button onclick="closeModal('modal-announcement-detail')" class="text-slate-400 hover:text-slate-600 text-lg w-8 h-8 rounded-full bg-white flex items-center justify-center border border-slate-200 shadow-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6 space-y-4">
+                <div id="modal-detail-content" class="text-xs sm:text-sm text-slate-700 leading-relaxed space-y-3">
+                    <!-- Text inserted dynamically -->
+                </div>
+
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 flex items-center justify-between mt-6">
+                    <div>
+                        <div class="text-xs font-bold text-amber-800">Have a question regarding this notice?</div>
+                        <div class="text-[11px] text-amber-700">Submit a direct inquiry ticket to the responsible department staff.</div>
+                    </div>
+                    <button onclick="openSubmitInquiryFormFromDetail()" class="bg-amber-500 hover:bg-amber-600 text-kbu-navy font-bold px-3.5 py-2 rounded-xl text-xs shrink-0 shadow transition-all">
+                        <i class="fa-solid fa-paper-plane mr-1"></i>Ask Question (UC-08)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-end rounded-b-2xl">
+                <button onclick="closeModal('modal-announcement-detail')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-xl text-xs font-semibold">
+                    Close Notice
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal 2: Submit Inquiry Form (UC-08) -->
+    <div id="modal-submit-inquiry" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-amber-500/10 rounded-t-2xl">
+                <div>
+                    <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">UC-08 Interaction</span>
+                    <h3 class="text-base font-bold text-slate-800">Submit Inquiry Ticket to Staff</h3>
+                </div>
+                <button onclick="closeModal('modal-submit-inquiry')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleInquirySubmit(event)" class="p-5 space-y-4">
+                <input type="hidden" id="inquiry-announcement-id">
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Regarding Announcement</label>
+                    <input type="text" id="inquiry-announcement-title" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Student Identifier</label>
+                    <input type="text" id="inquiry-student-info" readonly value="Sai Thet Htut Lin (ID: 67123407)" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-700">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Your Question / Clarification Details <span class="text-red-500">*</span></label>
+                    <textarea id="inquiry-question-text" rows="4" required placeholder="Describe your question clearly (e.g., Request for clarification on exam timetable conflict)..." class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-submit-inquiry')" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Cancel</button>
+                    <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-kbu-navy font-bold px-4 py-2 rounded-xl text-xs shadow-md">
+                        Submit Inquiry Ticket
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Modal 3: Student Submitted Inquiries Tracker Modal (UC-11, UC-13) -->
+    <div id="modal-inquiry-tracker" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
+            <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+                <div>
+                    <h3 class="text-base font-bold text-slate-800">My Submitted Inquiry Tickets</h3>
+                    <p class="text-xs text-slate-500">Track resolution progress and read responses from university staff.</p>
+                </div>
+                <button onclick="closeModal('modal-inquiry-tracker')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-5 flex-1 overflow-y-auto space-y-4" id="student-inquiries-list">
+                <!-- JS populated student tickets -->
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t border-slate-200 text-right">
+                <button onclick="closeModal('modal-inquiry-tracker')" class="bg-slate-800 text-white font-semibold px-4 py-2 rounded-xl text-xs">Close Tracker</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal 4: Staff Create Announcement (UC-02, UC-03) -->
+    <div id="modal-create-announcement" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
+            <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-800 text-white rounded-t-2xl">
+                <div>
+                    <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">UC-02 & UC-03 Publishing Studio</span>
+                    <h3 class="text-base font-bold">Create & Publish University Announcement</h3>
+                </div>
+                <button onclick="closeModal('modal-create-announcement')" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleCreateAnnouncementSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Announcement Title <span class="text-red-500">*</span></label>
+                    <input type="text" id="create-title" required placeholder="e.g. Midterm Registration Deadline Extension Notice" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                        <select id="create-category" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="ACADEMIC">Academic</option>
+                            <option value="REGISTRATION">Registration</option>
+                            <option value="TUITION">Tuition & Finance</option>
+                            <option value="CAMPUS">Campus Life</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Target Audience</label>
+                        <select id="create-target" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="All KBU Students">All KBU Students</option>
+                            <option value="Year 1 & 2 Undergraduates">Year 1 & 2 Undergraduates</option>
+                            <option value="Faculty of Engineering & IT">Faculty of Engineering & IT</option>
+                            <option value="International Program">International Program</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Content Body (Markdown formatted) <span class="text-red-500">*</span></label>
+                    <textarea id="create-content" rows="6" required placeholder="Write clear, structured details regarding this university announcement..." class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+
+                <!-- Webhook options -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-brands fa-line text-green-600 text-lg"></i>
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">Auto Push to LINE Official Channel</div>
+                            <div class="text-[10px] text-slate-500">Sends summary teaser link to traditional LINE groups</div>
+                        </div>
+                    </div>
+                    <input type="checkbox" checked id="create-line-push" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
+                </div>
+
+                <div class="flex items-center justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-create-announcement')" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Cancel</button>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-md">
+                        Publish Announcement Now (UC-03)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Modal 5: Staff Respond to Inquiry Ticket Drawer (UC-10) -->
+    <div id="modal-respond-inquiry" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200">
+            <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-blue-50 rounded-t-2xl">
+                <div>
+                    <span class="text-[10px] font-bold text-blue-800 uppercase tracking-wider">UC-10 Response Drawer</span>
+                    <h3 class="text-base font-bold text-slate-800">Respond to Student Inquiry</h3>
+                </div>
+                <button onclick="closeModal('modal-respond-inquiry')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleStaffResponseSubmit(event)" class="p-5 space-y-4">
+                <input type="hidden" id="respond-ticket-id">
+                
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                    <div class="text-slate-400 font-bold">STUDENT QUESTION:</div>
+                    <div id="respond-student-question" class="text-slate-800 font-medium">--</div>
+                    <div class="text-[10px] text-slate-400 mt-1" id="respond-student-info">From Student ID: --</div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Official Response Text <span class="text-red-500">*</span></label>
+                    <textarea id="respond-answer-text" rows="4" required placeholder="Type clear official response for the student..." class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Update Status</label>
+                    <select id="respond-status" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 font-semibold focus:outline-none">
+                        <option value="RESOLVED">Mark as RESOLVED</option>
+                        <option value="IN_PROGRESS">Set to IN PROGRESS</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-respond-inquiry')" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md">
+                        Submit Response & Update Status
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT APP STATE & INTERACTION LOGIC -->
+    <!-- ========================================================================= -->
+    <script>
+        // State Object
+        const AppState = {
+            currentUser: null, // null (logged out) | { name, role: 'student'|'staff', id, avatar }
+            loginRole: 'student', // 'student' | 'staff'
+            selectedCategory: 'ALL',
+            searchQuery: '',
+            staffFilterStatus: 'ALL',
+            
+            // Mock Announcement Data
+            announcements: [
+                {
+                    id: 1,
+                    title: "Final Examination Timetable & Hall Regulations - Semester 1/2026",
+                    category: "ACADEMIC",
+                    categoryLabel: "Academic",
+                    categoryBg: "bg-blue-100 text-blue-800",
+                    author: "Office of the Registrar",
+                    date: "Aug 24, 2026",
+                    target: "All KBU Students",
+                    views: 412,
+                    content: `
+                        <p>The official examination schedule for Semester 1/2026 has been published. All students are requested to check their individual course exam dates via the portal.</p>
+                        <h4 class="font-bold text-slate-800 text-xs mt-2">Important Regulations:</h4>
+                        <ul class="list-disc pl-5 text-xs space-y-1">
+                            <li>Students must wear formal Kasem Bundit University uniform.</li>
+                            <li>Student ID card is mandatory for exam room admission.</li>
+                            <li>No electronic devices or smartwatches allowed in exam halls.</li>
+                        </ul>
+                    `
+                },
+                {
+                    id: 2,
+                    title: "Tuition Fee Payment Deadline & Installment Plan Application",
+                    category: "TUITION",
+                    categoryLabel: "Tuition & Finance",
+                    categoryBg: "bg-purple-100 text-purple-800",
+                    author: "Financial Services Dept",
+                    date: "Aug 22, 2026",
+                    target: "All KBU Students",
+                    views: 298,
+                    content: `
+                        <p>This is a reminder that the final deadline for Semester 1/2026 tuition payment is September 10, 2026.</p>
+                        <p>Students seeking installment arrangements can submit financial aid forms through the Finance Office before August 30.</p>
+                    `
+                },
+                {
+                    id: 3,
+                    title: "Add/Drop Course Registration Window Opening Phase 2",
+                    category: "REGISTRATION",
+                    categoryLabel: "Registration",
+                    categoryBg: "bg-emerald-100 text-emerald-800",
+                    author: "Academic Affairs Office",
+                    date: "Aug 20, 2026",
+                    target: "Year 1 & 2 Undergraduates",
+                    views: 654,
+                    content: `
+                        <p>Phase 2 of course add/drop registration will open on Monday at 09:00 AM.</p>
+                        <p>Please ensure advisor approval is granted before submitting course adjustments.</p>
+                    `
+                },
+                {
+                    id: 4,
+                    title: "Annual Campus Mate Sports Festival & Cultural Fair 2026",
+                    category: "CAMPUS",
+                    categoryLabel: "Campus Life",
+                    categoryBg: "bg-amber-100 text-amber-800",
+                    author: "Student Affairs Council",
+                    date: "Aug 18, 2026",
+                    target: "All KBU Students",
+                    views: 520,
+                    content: `
+                        <p>Kasem Bundit University invites all students to participate in the Annual Sports Festival and Cultural Fair taking place next month!</p>
+                    `
+                }
+            ],
+
+            // Mock Inquiry Tickets Data
+            inquiries: [
+                {
+                    id: "INQ-2026-001",
+                    announcementId: 1,
+                    announcementTitle: "Final Examination Timetable & Hall Regulations",
+                    studentName: "Sai Thet Htut Lin",
+                    studentId: "67123407",
+                    question: "If I have two exams scheduled at the exact same time slot on Wednesday morning, how do I apply for exam rescheduling?",
+                    status: "RESOLVED",
+                    dateSubmitted: "2026-08-25 10:30 AM",
+                    answer: "Please contact the Registrar Office in Room 302 with your exam slip. We will assign an individual conflict examination room.",
+                    staffName: "Ajarn Atcha (Registrar)"
+                },
+                {
+                    id: "INQ-2026-002",
+                    announcementId: 2,
+                    announcementTitle: "Tuition Fee Payment Deadline & Installment Plan",
+                    studentName: "Sai Thet Htut Lin",
+                    studentId: "67123407",
+                    question: "Can international students pay tuition fees via bank transfer from overseas?",
+                    status: "OPEN",
+                    dateSubmitted: "2026-08-26 08:15 AM",
+                    answer: null,
+                    staffName: null
+                },
+                {
+                    id: "INQ-2026-003",
+                    announcementId: 3,
+                    announcementTitle: "Add/Drop Course Registration Window Opening",
+                    studentName: "Swe Yee Hnin",
+                    studentId: "67123972",
+                    question: "Is there a limit on total credits allowed for Phase 2 add/drop?",
+                    status: "OPEN",
+                    dateSubmitted: "2026-08-26 09:00 AM",
+                    answer: null,
+                    staffName: null
+                }
+            ]
+        };
+
+        // Toggle Login Role (Student vs Staff)
+        function setLoginRole(role) {
+            AppState.loginRole = role;
+            const btnStudent = document.getElementById('tab-login-student');
+            const btnStaff = document.getElementById('tab-login-staff');
+            const labelUser = document.getElementById('label-username');
+            const inputUser = document.getElementById('login-username');
+            const btnSubmit = document.getElementById('btn-login-submit');
+
+            if (role === 'student') {
+                btnStudent.className = 'flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-amber-500 text-kbu-navy shadow';
+                btnStaff.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 transition-all';
+                labelUser.innerText = 'Student ID Number';
+                inputUser.value = '67123407';
+                btnSubmit.innerHTML = `<span>Access Student Dashboard</span><i class="fa-solid fa-arrow-right"></i>`;
+                btnSubmit.className = 'w-full bg-amber-500 hover:bg-amber-600 text-kbu-navy font-extrabold py-3 rounded-xl text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 mt-2';
+            } else {
+                btnStaff.className = 'flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-emerald-600 text-white shadow';
+                btnStudent.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 transition-all';
+                labelUser.innerText = 'Staff / Faculty ID';
+                inputUser.value = 'ST-2026';
+                btnSubmit.innerHTML = `<span>Access Administrative Dashboard</span><i class="fa-solid fa-arrow-right"></i>`;
+                btnSubmit.className = 'w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 mt-2';
+            }
+        }
+
+        // Quick Demo Login Button
+        function quickLogin(role) {
+            setLoginRole(role);
+            performLogin(role);
+        }
+
+        // Handle Login Form Submission
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            performLogin(AppState.loginRole);
+        }
+
+        // Execute Login & Redirect
+        function performLogin(role) {
+            if (role === 'student') {
+                AppState.currentUser = {
+                    name: 'Sai Thet Htut Lin',
+                    id: '67123407',
+                    role: 'student',
+                    roleTitle: 'Student • ID: 67123407',
+                    avatar: 'SL'
+                };
+            } else {
+                AppState.currentUser = {
+                    name: 'Ajarn Atcha',
+                    id: 'ST-2026',
+                    role: 'staff',
+                    roleTitle: 'Staff • Registrar Administrator',
+                    avatar: 'AA'
+                };
+            }
+
+            // Update Header User Profile UI
+            document.getElementById('header-user-section').classList.remove('hidden');
+            document.getElementById('user-name').innerText = AppState.currentUser.name;
+            document.getElementById('user-role').innerText = AppState.currentUser.roleTitle;
+            document.getElementById('user-avatar').innerText = AppState.currentUser.avatar;
+
+            // Hide Login Page
+            document.getElementById('view-login').classList.add('hidden');
+
+            // Show corresponding dashboard
+            if (role === 'student') {
+                document.getElementById('view-staff').classList.add('hidden');
+                document.getElementById('view-student').classList.remove('hidden');
+                renderAnnouncementFeed();
+                showToast(`Welcome back, ${AppState.currentUser.name}! Logged into Student Portal.`, 'success');
+            } else {
+                document.getElementById('view-student').classList.add('hidden');
+                document.getElementById('view-staff').classList.remove('hidden');
+                renderStaffDashboard();
+                showToast(`Staff Authentication Verified! Welcome, ${AppState.currentUser.name}.`, 'success');
+            }
+        }
+
+        // Logout back to Login Page
+        function logout() {
+            AppState.currentUser = null;
+            document.getElementById('header-user-section').classList.add('hidden');
+            document.getElementById('view-student').classList.add('hidden');
+            document.getElementById('view-staff').classList.add('hidden');
+            document.getElementById('view-login').classList.remove('hidden');
+            showToast('You have been logged out.', 'info');
+        }
+
+        function handleLogoClick() {
+            if (!AppState.currentUser) {
+                // If on login screen, do nothing
+                return;
+            }
+            // If logged in, show student or staff based on role
+            if (AppState.currentUser.role === 'student') {
+                document.getElementById('view-staff').classList.add('hidden');
+                document.getElementById('view-student').classList.remove('hidden');
+            } else {
+                document.getElementById('view-student').classList.add('hidden');
+                document.getElementById('view-staff').classList.remove('hidden');
+            }
+        }
+
+        // Render Student Announcement Cards Feed
+        function renderAnnouncementFeed() {
+            const grid = document.getElementById('announcement-grid');
+            grid.innerHTML = '';
+
+            const filtered = AppState.announcements.filter(item => {
+                const matchesCat = AppState.selectedCategory === 'ALL' || item.category === AppState.selectedCategory;
+                const matchesSearch = item.title.toLowerCase().includes(AppState.searchQuery.toLowerCase()) ||
+                                      item.author.toLowerCase().includes(AppState.searchQuery.toLowerCase());
+                return matchesCat && matchesSearch;
+            });
+
+            document.getElementById('announcement-count').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
+                        <i class="fa-solid fa-folder-open text-4xl mb-2 text-slate-300"></i>
+                        <p class="text-xs font-bold text-slate-600">No announcements match your filter.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 hover:shadow-md hover:border-amber-400 transition-all flex flex-col justify-between group";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="${item.categoryBg} text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider">${item.categoryLabel}</span>
+                            <span class="text-[10px] text-slate-400 font-medium"><i class="fa-regular fa-clock mr-1"></i>${item.date}</span>
+                        </div>
+
+                        <h3 class="font-bold text-slate-800 text-sm leading-snug group-hover:text-blue-600 transition-colors line-clamp-2">
+                            ${item.title}
+                        </h3>
+
+                        <p class="text-xs text-slate-500 mt-2 line-clamp-3">
+                            ${item.content.replace(/<[^>]*>?/gm, '')}
+                        </p>
+                    </div>
+
+                    <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <div class="flex items-center space-x-2 text-[11px] text-slate-500 font-medium">
+                            <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px]"><i class="fa-solid fa-users text-[9px] mr-1"></i>${item.target}</span>
+                        </div>
+
+                        <button onclick="openAnnouncementModal(${item.id})" class="text-xs font-bold text-amber-600 hover:text-amber-700 flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                            <span>Read Notice</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            // Update submitted inquiry count badge for current student
+            const studentId = AppState.currentUser ? AppState.currentUser.id : "67123407";
+            const studentTickets = AppState.inquiries.filter(i => i.studentId === studentId);
+            document.getElementById('student-inquiry-badge').innerText = studentTickets.length;
+        }
+
+        function setCategory(cat) {
+            AppState.selectedCategory = cat;
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                btn.className = 'cat-pill bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0';
+            });
+            event.target.closest('button').className = 'cat-pill bg-kbu-navy text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all shrink-0 shadow-sm';
+            renderAnnouncementFeed();
+        }
+
+        function filterAnnouncements() {
+            AppState.searchQuery = document.getElementById('student-search').value;
+            renderAnnouncementFeed();
+        }
+
+        // Filter Staff Inquiries Table
+        function filterStaffInquiries(status) {
+            AppState.staffFilterStatus = status;
+            document.querySelectorAll('.staff-filter-btn').forEach(btn => {
+                btn.className = 'staff-filter-btn bg-slate-100 text-slate-600 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold';
+            });
+            event.target.className = 'staff-filter-btn bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold';
+            renderStaffDashboard();
+        }
+
+        // Render Staff Admin Dashboard
+        function renderStaffDashboard() {
+            // Update stats
+            const openTickets = AppState.inquiries.filter(i => i.status === 'OPEN');
+            document.getElementById('stat-pending-inquiries').innerText = openTickets.length;
+            document.getElementById('queue-count-badge').innerText = `${openTickets.length} Open`;
+
+            // Filter tickets based on status tab
+            let list = AppState.inquiries;
+            if (AppState.staffFilterStatus !== 'ALL') {
+                list = AppState.inquiries.filter(i => i.status === AppState.staffFilterStatus);
+            }
+
+            // Render Inquiry Queue Table
+            const tbody = document.getElementById('staff-inquiry-tbody');
+            tbody.innerHTML = '';
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400">No inquiry tickets found under this view.</td></tr>`;
+            } else {
+                list.forEach(ticket => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition-colors";
+                    
+                    let statusBadge = `<span class="bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded text-[10px]"><i class="fa-solid fa-clock mr-1"></i>OPEN</span>`;
+                    if (ticket.status === 'RESOLVED') {
+                        statusBadge = `<span class="bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded text-[10px]"><i class="fa-solid fa-check mr-1"></i>RESOLVED</span>`;
+                    }
+
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 font-mono font-bold text-slate-700">${ticket.id}</td>
+                        <td class="py-3 px-4">
+                            <div class="font-bold text-slate-800">${ticket.studentName}</div>
+                            <div class="text-[10px] text-slate-400">ID: ${ticket.studentId}</div>
+                        </td>
+                        <td class="py-3 px-4 max-w-xs truncate font-medium text-slate-600">${ticket.announcementTitle}</td>
+                        <td class="py-3 px-4 max-w-xs truncate text-slate-700 font-medium">"${ticket.question}"</td>
+                        <td class="py-3 px-4">${statusBadge}</td>
+                        <td class="py-3 px-4 text-slate-400 text-[11px]">${ticket.dateSubmitted}</td>
+                        <td class="py-3 px-4 text-right">
+                            <button onclick="openRespondInquiryDrawer('${ticket.id}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1.5 rounded-lg text-[11px] shadow">
+                                ${ticket.status === 'RESOLVED' ? 'View/Edit Response' : 'Respond (UC-10)'}
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Render Staff Announcements Manage List
+            const staffList = document.getElementById('staff-announcements-list');
+            staffList.innerHTML = '';
+            AppState.announcements.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex items-center justify-between";
+                itemDiv.innerHTML = `
+                    <div class="max-w-md">
+                        <div class="text-[10px] font-bold text-blue-600 uppercase">${item.categoryLabel}</div>
+                        <div class="text-xs font-bold text-slate-800 truncate">${item.title}</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">Target: ${item.target} • Published: ${item.date}</div>
+                    </div>
+                    <div class="flex items-center space-x-1 shrink-0">
+                        <button onclick="showToast('Announcement edit window opened (UC-14)', 'info')" class="text-slate-500 hover:text-slate-800 p-1.5"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="showToast('LINE Webhook re-triggered for this item', 'success')" class="text-green-600 hover:text-green-700 p-1.5"><i class="fa-brands fa-line"></i></button>
+                    </div>
+                `;
+                staffList.appendChild(itemDiv);
+            });
+        }
+
+        // Modal Helper Functions
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // Open Announcement Detail Modal
+        function openAnnouncementModal(id) {
+            const item = AppState.announcements.find(a => a.id === id);
+            if (!item) return;
+
+            document.getElementById('modal-detail-category').innerText = item.categoryLabel;
+            document.getElementById('modal-detail-title').innerText = item.title;
+            document.getElementById('modal-detail-author').innerHTML = `<i class="fa-solid fa-user-tie mr-1"></i>${item.author}`;
+            document.getElementById('modal-detail-date').innerHTML = `<i class="fa-solid fa-calendar mr-1"></i>${item.date}`;
+            document.getElementById('modal-detail-content').innerHTML = item.content;
+
+            // Set hidden data for submit form linkage
+            document.getElementById('inquiry-announcement-id').value = item.id;
+            document.getElementById('inquiry-announcement-title').value = item.title;
+
+            openModal('modal-announcement-detail');
+        }
+
+        function openSubmitInquiryFormFromDetail() {
+            closeModal('modal-announcement-detail');
+            const studentInfo = AppState.currentUser ? `${AppState.currentUser.name} (ID: ${AppState.currentUser.id})` : 'Sai Thet Htut Lin (ID: 67123407)';
+            document.getElementById('inquiry-student-info').value = studentInfo;
+            openModal('modal-submit-inquiry');
+        }
+
+        // Open Student Inquiry Tracker Modal
+        function openInquiryTrackerModal() {
+            const list = document.getElementById('student-inquiries-list');
+            list.innerHTML = '';
+
+            const studentId = AppState.currentUser ? AppState.currentUser.id : "67123407";
+            const myTickets = AppState.inquiries.filter(i => i.studentId === studentId);
+
+            if (myTickets.length === 0) {
+                list.innerHTML = `<div class="text-center text-xs text-slate-400 py-6">You have no active inquiry tickets.</div>`;
+            } else {
+                myTickets.forEach(t => {
+                    const div = document.createElement('div');
+                    div.className = "bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2";
+                    
+                    let statusTag = `<span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[10px]">PENDING STAFF RESPONSE</span>`;
+                    if (t.status === 'RESOLVED') {
+                        statusTag = `<span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px]">RESOLVED</span>`;
+                    }
+
+                    div.innerHTML = `
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-mono font-bold text-slate-500">${t.id}</span>
+                            ${statusTag}
+                        </div>
+                        <div class="text-xs font-bold text-slate-800">Re: ${t.announcementTitle}</div>
+                        <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-xs text-slate-700 italic">
+                            "${t.question}"
+                        </div>
+                        ${t.answer ? `
+                            <div class="bg-emerald-50 p-2.5 rounded-lg border border-emerald-200 text-xs text-slate-800 mt-2">
+                                <div class="font-bold text-emerald-800 text-[10px]"><i class="fa-solid fa-reply mr-1"></i>Official Staff Response (${t.staffName}):</div>
+                                <div class="mt-0.5">${t.answer}</div>
+                            </div>
+                        ` : ''}
+                    `;
+                    list.appendChild(div);
+                });
+            }
+
+            openModal('modal-inquiry-tracker');
+        }
+
+        // Submit Inquiry (UC-08) Handler
+        function handleInquirySubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('inquiry-announcement-title').value;
+            const annId = parseInt(document.getElementById('inquiry-announcement-id').value);
+            const question = document.getElementById('inquiry-question-text').value;
+
+            const studentName = AppState.currentUser ? AppState.currentUser.name : "Sai Thet Htut Lin";
+            const studentId = AppState.currentUser ? AppState.currentUser.id : "67123407";
+
+            const newTicket = {
+                id: `INQ-2026-00${AppState.inquiries.length + 1}`,
+                announcementId: annId,
+                announcementTitle: title,
+                studentName: studentName,
+                studentId: studentId,
+                question: question,
+                status: "OPEN",
+                dateSubmitted: "Just now",
+                answer: null,
+                staffName: null
+            };
+
+            AppState.inquiries.unshift(newTicket);
+            closeModal('modal-submit-inquiry');
+            document.getElementById('inquiry-question-text').value = '';
+            showToast('Inquiry ticket submitted successfully! (UC-08)', 'success');
+            renderAnnouncementFeed();
+        }
+
+        // Open Staff Create Modal
+        function openCreateAnnouncementModal() {
+            openModal('modal-create-announcement');
+        }
+
+        // Create Announcement (UC-02, UC-03) Handler
+        function handleCreateAnnouncementSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('create-title').value;
+            const cat = document.getElementById('create-category').value;
+            const target = document.getElementById('create-target').value;
+            const content = document.getElementById('create-content').value;
+            const linePush = document.getElementById('create-line-push').checked;
+
+            let catBg = "bg-blue-100 text-blue-800";
+            let catLabel = "Academic";
+            if (cat === 'REGISTRATION') { catBg = "bg-emerald-100 text-emerald-800"; catLabel = "Registration"; }
+            else if (cat === 'TUITION') { catBg = "bg-purple-100 text-purple-800"; catLabel = "Tuition & Finance"; }
+            else if (cat === 'CAMPUS') { catBg = "bg-amber-100 text-amber-800"; catLabel = "Campus Life"; }
+
+            const authorName = AppState.currentUser ? AppState.currentUser.name : "Registrar & Academic Admin";
+
+            const newAnn = {
+                id: AppState.announcements.length + 1,
+                title: title,
+                category: cat,
+                categoryLabel: catLabel,
+                categoryBg: catBg,
+                author: authorName,
+                date: "Aug 26, 2026",
+                target: target,
+                views: 1,
+                content: `<p>${content}</p>`
+            };
+
+            AppState.announcements.unshift(newAnn);
+            closeModal('modal-create-announcement');
+
+            if (linePush) {
+                showToast('Published & Cross-Posted to LINE Channel! (UC-03)', 'success');
+            } else {
+                showToast('Announcement Published to Portal! (UC-03)', 'success');
+            }
+
+            renderStaffDashboard();
+        }
+
+        // Open Staff Respond Drawer
+        function openRespondInquiryDrawer(ticketId) {
+            const ticket = AppState.inquiries.find(i => i.id === ticketId);
+            if (!ticket) return;
+
+            document.getElementById('respond-ticket-id').value = ticket.id;
+            document.getElementById('respond-student-question').innerText = `"${ticket.question}"`;
+            document.getElementById('respond-student-info').innerText = `From: ${ticket.studentName} (ID: ${ticket.studentId}) • Re: ${ticket.announcementTitle}`;
+            document.getElementById('respond-answer-text').value = ticket.answer || '';
+            document.getElementById('respond-status').value = ticket.status === 'RESOLVED' ? 'RESOLVED' : 'RESOLVED';
+
+            openModal('modal-respond-inquiry');
+        }
+
+        // Submit Staff Response (UC-10) Handler
+        function handleStaffResponseSubmit(e) {
+            e.preventDefault();
+            const ticketId = document.getElementById('respond-ticket-id').value;
+            const answer = document.getElementById('respond-answer-text').value;
+            const status = document.getElementById('respond-status').value;
+
+            const ticket = AppState.inquiries.find(i => i.id === ticketId);
+            if (ticket) {
+                ticket.answer = answer;
+                ticket.status = status;
+                ticket.staffName = AppState.currentUser ? `${AppState.currentUser.name} (Registrar)` : "Ajarn Atcha (Registrar)";
+            }
+
+            closeModal('modal-respond-inquiry');
+            showToast('Response submitted & ticket status updated! (UC-10)', 'success');
+            renderStaffDashboard();
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bg = "bg-slate-800 text-white";
+            let icon = "fa-circle-info";
+            if (type === 'success') { bg = "bg-emerald-600 text-white"; icon = "fa-circle-check"; }
+            
+            toast.className = `${bg} px-4 py-3 rounded-xl shadow-xl font-bold text-xs flex items-center space-x-2 transition-all transform translate-y-2 pointer-events-auto`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
